@@ -34,6 +34,7 @@ from pathlib2 import Path
 
 from superset import app, appbuilder, config, security_manager
 from superset.app import create_app
+from superset.examples.utils import load_from_configs
 from superset.extensions import celery_app, db
 from superset.utils import core as utils
 from superset.utils.celery import session_scope
@@ -194,8 +195,16 @@ def load_examples(
     only_metadata: bool = False,
     force: bool = False,
 ) -> None:
-    """Loads a set of Slices and Dashboards and a supporting dataset """
+    """Loads a set of Slices and Dashboards and a supporting dataset"""
     load_examples_run(load_test_data, load_big_data, only_metadata, force)
+
+
+@with_appcontext
+@superset.command()
+@click.argument("directory")
+def import_(directory: str) -> None:
+    """Imports configs from a given directory"""
+    load_from_configs(force_data=False, load_test_data=False, root=Path(directory))
 
 
 @with_appcontext
